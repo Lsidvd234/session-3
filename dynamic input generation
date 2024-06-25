@@ -1,0 +1,73 @@
+function generateCourseInputs() {
+    const totalCourses = document.getElementById('totalCourses').value;
+    const courseInputsContainer = document.getElementById('courseInputs');
+    courseInputsContainer.innerHTML = '';
+
+    for (let i = 0; i < totalCourses; i++) {
+        const courseGroup = document.createElement('div');
+        courseGroup.className = 'input-group';
+
+        const courseNameLabel = document.createElement('label');
+        courseNameLabel.innerText = `Course ${i + 1} Code`;
+        courseGroup.appendChild(courseNameLabel);
+
+        const courseNameInput = document.createElement('input');
+        courseNameInput.type = 'text';
+        courseNameInput.name = `courseCode${i}`;
+        courseNameInput.required = true;
+        courseGroup.appendChild(courseNameInput);
+
+        const gradeLabel = document.createElement('label');
+        gradeLabel.innerText = `Grade for Course ${i + 1}`;
+        courseGroup.appendChild(gradeLabel);
+
+        const gradeInput = document.createElement('input');
+        gradeInput.type = 'number';
+        gradeInput.name = `grade${i}`;
+        gradeInput.min = 0;
+        gradeInput.max = 10;
+        gradeInput.required = true;
+        courseGroup.appendChild(gradeInput);
+
+        courseInputsContainer.appendChild(courseGroup);
+    }
+
+    document.getElementById('coursesForm').style.display = 'block';
+}
+
+document.getElementById('coursesForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    calculateCGPA();
+});
+
+const courseData = {
+    'CS101': 4,
+    'MA101': 3,
+    'PH101': 3,
+    'HS101': 2,
+    'EC101': 4,
+    // Add more courses and their credit values as needed
+};
+
+function calculateCGPA() {
+    const totalCourses = document.getElementById('totalCourses').value;
+    let totalCredits = 0;
+    let totalWeightedGrades = 0;
+
+    for (let i = 0; i < totalCourses; i++) {
+        const courseCode = document.querySelector(`input[name=courseCode${i}]`).value.toUpperCase();
+        const grade = parseFloat(document.querySelector(`input[name=grade${i}]`).value);
+        const credits = courseData[courseCode];
+
+        if (credits) {
+            totalCredits += credits;
+            totalWeightedGrades += grade * credits;
+        } else {
+            alert(`Course code ${courseCode} not found.`);
+            return;
+        }
+    }
+
+    const cgpa = totalWeightedGrades / totalCredits;
+    document.getElementById('results').innerText = `Your CGPA is ${cgpa.toFixed(2)}`;
+}
